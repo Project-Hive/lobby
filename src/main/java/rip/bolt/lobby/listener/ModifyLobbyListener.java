@@ -1,0 +1,114 @@
+package rip.bolt.lobby.listener;
+
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.hanging.HangingPlaceEvent;
+import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.weather.WeatherChangeEvent;
+
+import rip.bolt.lobby.manager.ModifyLobbyManager;
+
+public class ModifyLobbyListener implements Listener {
+
+    private ModifyLobbyManager modifyLobbyManager;
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+        if (!modifyLobbyManager.canModifyLobby(event.getPlayer()))
+            event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        if (!modifyLobbyManager.canModifyLobby(event.getPlayer()))
+            event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onArmourStandEdit(PlayerArmorStandManipulateEvent event) {
+        if (!modifyLobbyManager.canModifyLobby(event.getPlayer()))
+            event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        if (!modifyLobbyManager.canModifyLobby(event.getPlayer()))
+            event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerInteract(PlayerInteractEntityEvent event) {
+        if (event.getRightClicked().getType() == EntityType.ITEM_FRAME && !modifyLobbyManager.canModifyLobby(event.getPlayer()))
+            event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onHangingPlace(HangingPlaceEvent event) {
+        if (!modifyLobbyManager.canModifyLobby(event.getPlayer()))
+            event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onHangingPlace(HangingBreakByEntityEvent event) {
+        if (event.getEntityType() == EntityType.ITEM_FRAME) {
+            if (!(event.getRemover() instanceof Player))
+                return;
+
+            Player player = (Player) event.getRemover();
+            if (!modifyLobbyManager.canModifyLobby(player))
+                event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Player))
+            return;
+
+        Player player = (Player) event.getDamager();
+        if (!modifyLobbyManager.canModifyLobby(player))
+            event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onRaining(WeatherChangeEvent event) {
+        if (event.toWeatherState())
+            event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onDropItem(PlayerDropItemEvent event) {
+        if (!modifyLobbyManager.canModifyLobby(event.getPlayer()))
+            event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPickupItem(PlayerPickupItemEvent event) {
+        if (!modifyLobbyManager.canModifyLobby(event.getPlayer()))
+            event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        modifyLobbyManager.setModifyLobby(event.getPlayer(), false);
+    }
+
+    @EventHandler
+    public void onPlayerLeave(PlayerQuitEvent event) {
+        modifyLobbyManager.removeModifyLobby(event.getPlayer());
+    }
+
+}

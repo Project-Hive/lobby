@@ -1,0 +1,3 @@
+name: Lobby
+version: 1.0.0
+main: rip.bolt.lobby.LobbyPlugin
