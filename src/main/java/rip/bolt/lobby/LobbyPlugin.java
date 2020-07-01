@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.sk89q.bukkit.util.CommandsManagerRegistration;
@@ -15,9 +16,12 @@ import com.sk89q.minecraft.util.commands.MissingNestedCommandException;
 import com.sk89q.minecraft.util.commands.WrappedCommandException;
 
 import net.md_5.bungee.api.ChatColor;
+import rip.bolt.lobby.chunk.NullChunkGenerator;
 import rip.bolt.lobby.commands.LobbyCommands;
 import rip.bolt.lobby.exception.PlayerNotFoundException;
 import rip.bolt.lobby.listener.ModifyLobbyListener;
+import rip.bolt.lobby.listener.PlayerFallOutOfMapListener;
+import rip.bolt.lobby.listener.TabHeaderFooterListener;
 import rip.bolt.lobby.manager.ModifyLobbyManager;
 import rip.bolt.lobby.manager.ServerBrowserManager;
 
@@ -34,11 +38,14 @@ public class LobbyPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        saveDefaultConfig();
 
         modifyLobbyManager = new ModifyLobbyManager();
         serverBrowserManager = new ServerBrowserManager();
 
         Bukkit.getPluginManager().registerEvents(new ModifyLobbyListener(), this);
+        Bukkit.getPluginManager().registerEvents(new TabHeaderFooterListener(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerFallOutOfMapListener(), this);
 
         setupCommands();
         System.out.println("[Lobby] Lobby is now enabled!");
@@ -73,6 +80,11 @@ public class LobbyPlugin extends JavaPlugin {
             sender.sendMessage(ChatColor.RED + e.getMessage());
         }
         return true;
+    }
+
+    @Override
+    public ChunkGenerator getDefaultWorldGenerator(String worldName, String id) {
+        return new NullChunkGenerator();
     }
 
     private void setupCommands() {

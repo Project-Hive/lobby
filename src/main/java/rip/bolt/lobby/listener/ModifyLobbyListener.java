@@ -8,6 +8,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
@@ -19,11 +22,12 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
+import rip.bolt.lobby.LobbyPlugin;
 import rip.bolt.lobby.manager.ModifyLobbyManager;
 
 public class ModifyLobbyListener implements Listener {
 
-    private ModifyLobbyManager modifyLobbyManager;
+    private ModifyLobbyManager modifyLobbyManager = LobbyPlugin.getInstance().getModifyLobbyManager();
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
@@ -84,9 +88,20 @@ public class ModifyLobbyListener implements Listener {
     }
 
     @EventHandler
+    public void onPlayerFall(EntityDamageEvent event) {
+        if (event.getCause() == DamageCause.FALL && event.getEntity() instanceof Player)
+            event.setCancelled(true);
+    }
+
+    @EventHandler
     public void onRaining(WeatherChangeEvent event) {
         if (event.toWeatherState())
             event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onFoodLevelChange(FoodLevelChangeEvent event) {
+        event.setCancelled(true);
     }
 
     @EventHandler
