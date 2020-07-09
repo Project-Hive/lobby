@@ -1,5 +1,6 @@
 package rip.bolt.lobby.listener;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -9,8 +10,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
@@ -21,6 +22,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
+
+import com.sk89q.minecraft.util.commands.ChatColor;
 
 import rip.bolt.lobby.LobbyPlugin;
 import rip.bolt.lobby.manager.ModifyLobbyManager;
@@ -118,6 +121,17 @@ public class ModifyLobbyListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+        Bukkit.getScheduler().runTaskLater(LobbyPlugin.getInstance(), new Runnable() {
+
+            @Override
+            public void run() {
+                // run a tick later due to some weird bug
+
+                event.getPlayer().setPlayerListName(ChatColor.AQUA + event.getPlayer().getName());
+                event.getPlayer().setDisplayName(ChatColor.AQUA + event.getPlayer().getName());
+            }
+
+        }, 1);
         modifyLobbyManager.setModifyLobby(event.getPlayer(), false);
     }
 
