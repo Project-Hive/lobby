@@ -126,9 +126,9 @@ public class ModifyLobbyListener implements Listener {
             @Override
             public void run() {
                 // run a tick later due to some weird bug
-
-                event.getPlayer().setPlayerListName(ChatColor.AQUA + event.getPlayer().getName());
-                event.getPlayer().setDisplayName(ChatColor.AQUA + event.getPlayer().getName());
+                // reset colour after so chat message isn't coloured
+                event.getPlayer().setPlayerListName(ChatColor.AQUA + event.getPlayer().getName() + ChatColor.RESET);
+                event.getPlayer().setDisplayName(ChatColor.AQUA + event.getPlayer().getName() + ChatColor.RESET);
             }
 
         }, 1);
