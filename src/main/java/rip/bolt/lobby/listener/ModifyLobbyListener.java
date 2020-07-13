@@ -124,9 +124,23 @@ public class ModifyLobbyListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         if (team == null) { // scoreboard manager loads after plugins
-            team = Bukkit.getServer().getScoreboardManager().getMainScoreboard().registerNewTeam("team");
+            team = Bukkit.getServer().getScoreboardManager().getMainScoreboard().getTeam("team");
+            if (team == null)
+                team = Bukkit.getServer().getScoreboardManager().getMainScoreboard().registerNewTeam("team");
             team.setPrefix(ChatColor.AQUA + "");
         }
+
+        Bukkit.getScheduler().runTaskLater(LobbyPlugin.getInstance(), new Runnable() {
+
+            @Override
+            public void run() {
+                // run a tick later due to some weird bug
+                // reset colour after so chat message isn't coloured
+                event.getPlayer().setPlayerListName(ChatColor.AQUA + event.getPlayer().getName() + ChatColor.RESET);
+                event.getPlayer().setDisplayName(ChatColor.AQUA + event.getPlayer().getName() + ChatColor.RESET);
+            }
+
+        }, 1);
 
         team.addEntry(event.getPlayer().getName());
         modifyLobbyManager.setModifyLobby(event.getPlayer(), false);
