@@ -22,6 +22,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
+import org.bukkit.scoreboard.Team;
 
 import com.sk89q.minecraft.util.commands.ChatColor;
 
@@ -30,6 +31,7 @@ import rip.bolt.lobby.manager.ModifyLobbyManager;
 
 public class ModifyLobbyListener implements Listener {
 
+    private Team team;
     private ModifyLobbyManager modifyLobbyManager = LobbyPlugin.getInstance().getModifyLobbyManager();
 
     @EventHandler
@@ -121,17 +123,12 @@ public class ModifyLobbyListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        Bukkit.getScheduler().runTaskLater(LobbyPlugin.getInstance(), new Runnable() {
+        if (team == null) { // scoreboard manager loads after plugins
+            team = Bukkit.getServer().getScoreboardManager().getMainScoreboard().registerNewTeam("team");
+            team.setPrefix(ChatColor.AQUA + "");
+        }
 
-            @Override
-            public void run() {
-                // run a tick later due to some weird bug
-                // reset colour after so chat message isn't coloured
-                event.getPlayer().setPlayerListName(ChatColor.AQUA + event.getPlayer().getName() + ChatColor.RESET);
-                event.getPlayer().setDisplayName(ChatColor.AQUA + event.getPlayer().getName() + ChatColor.RESET);
-            }
-
-        }, 1);
+        team.addEntry(event.getPlayer().getName());
         modifyLobbyManager.setModifyLobby(event.getPlayer(), false);
     }
 
