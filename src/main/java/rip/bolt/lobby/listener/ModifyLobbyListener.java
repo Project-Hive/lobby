@@ -1,6 +1,7 @@
 package rip.bolt.lobby.listener;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -143,6 +144,7 @@ public class ModifyLobbyListener implements Listener {
         }, 1);
 
         team.addEntry(event.getPlayer().getName());
+        event.getPlayer().teleport(new Location(Bukkit.getWorld("world"), -256.5,4,93.5,-34,-5));
         modifyLobbyManager.setModifyLobby(event.getPlayer(), false);
     }
 
